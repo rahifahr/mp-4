@@ -3,9 +3,9 @@ import Link from "next/link";
 export default function SiteFooter() {
     return (
         <footer className="site-footer">
-            <p>&copy; 2026 Art Explorer. All rights reserved.</p>
             <p>
-                <Link href="/credits">Credits</Link>
+                All Rights Reserved by Rahifah Rahman &#169;
+                <a href="#">Credits</a>
             </p>
         </footer>
     );
