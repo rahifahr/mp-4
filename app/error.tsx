@@ -1,6 +1,11 @@
 "use client";
 
-export default function GlobalError({ reset }) {
+type GlobalErrorProps = {
+    reset: () => void;
+};
+
+// Last-resort boundary so an unexpected crash never leaves a blank screen.
+export default function GlobalError({ reset }: GlobalErrorProps) {
     return (
         <main>
             <h1>Something went wrong</h1>

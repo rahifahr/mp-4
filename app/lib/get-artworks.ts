@@ -1,11 +1,18 @@
 import { requestHarvard } from "./harvard-api";
+import type {
+    Artwork,
+    ArtworkSearch,
+    HarvardListResponse,
+    HarvardRecord,
+    Result,
+} from "./types";
 
 const PAGE_SIZE = 12;
 const LIST_FIELDS = "id,title,people,dated,primaryimageurl,classification";
 const DETAIL_FIELDS =
     "id,title,people,dated,primaryimageurl,classification,medium,dimensions,culture,creditline,description,url";
 
-function simplifyArtwork(record) {
+function simplifyArtwork(record: HarvardRecord): Artwork {
     const artists = record.people?.map((person) => person.displayname) ?? [];
 
     return {
@@ -24,11 +31,17 @@ function simplifyArtwork(record) {
     };
 }
 
-export async function searchArtworks({ query, page }) {
-    const params = {
-        size: PAGE_SIZE,
-        page,
-        hasimage: 1,
+export async function searchArtworks({
+                                         query,
+                                         page,
+                                     }: {
+    query: string;
+    page: number;
+}): Promise<Result<ArtworkSearch>> {
+    const params: Record<string, string> = {
+        size: String(PAGE_SIZE),
+        page: String(page),
+        hasimage: "1",
         fields: LIST_FIELDS,
     };
 
@@ -38,13 +51,14 @@ export async function searchArtworks({ query, page }) {
         params.classification = "Paintings";
     }
 
-    const result = await requestHarvard("/object", params);
-    if (result.error) {
+    const result = await requestHarvard<HarvardListResponse>("/object", params);
+    if (!result.ok) {
         return result;
     }
 
     const { info, records } = result.data;
     return {
+        ok: true,
         data: {
             artworks: records.map(simplifyArtwork),
             page: info.page,
@@ -54,13 +68,17 @@ export async function searchArtworks({ query, page }) {
     };
 }
 
-export async function getArtwork(id) {
-    const result = await requestHarvard(`/object/${id}`, {
+export async function getArtwork(id: string): Promise<Result<Artwork>> {
+    if (!/^\d+$/.test(id)) {
+        return { ok: false, error: "That doesn't look like a valid artwork ID." };
+    }
+
+    const result = await requestHarvard<HarvardRecord>(`/object/${id}`, {
         fields: DETAIL_FIELDS,
     });
-    if (result.error) {
+    if (!result.ok) {
         return result;
     }
 
-    return { data: simplifyArtwork(result.data) };
+    return { ok: true, data: simplifyArtwork(result.data) };
 }

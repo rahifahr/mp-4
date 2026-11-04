@@ -1,7 +1,12 @@
 import Link from "next/link";
-import ArtworkImage from "./artwork-image";
+import ArtworkImage from "./ArtworkImage";
+import type { Artwork } from "../lib/types";
 
-export default function ArtworkCard({ artwork }) {
+type ArtworkCardProps = {
+    artwork: Artwork;
+};
+
+export default function ArtworkCard({ artwork }: ArtworkCardProps) {
     return (
         <li>
             <article className="artwork-card">

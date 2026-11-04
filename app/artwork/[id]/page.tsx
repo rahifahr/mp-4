@@ -1,16 +1,23 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import ArtworkImage from "../../components/artwork-image";
-import DetailList from "../../components/detail-list";
-import ErrorMessage from "../../components/error-message";
+import ArtworkImage from "../../components/ArtworkImage";
+import DetailList from "../../components/DetailList";
+import ErrorMessage from "../../components/ErrorMessage";
 import { getArtwork } from "../../lib/get-artworks";
 
-export default async function ArtworkPage({ params }) {
-    const { id } = await params;
-    const result = /^\d+$/.test(id)
-        ? await getArtwork(id)
-        : { error: "That doesn't look like a valid artwork ID." };
+export const metadata: Metadata = {
+    title: "Artwork",
+};
 
-    if (result.error) {
+type ArtworkPageProps = {
+    params: Promise<{ id: string }>;
+};
+
+export default async function ArtworkPage({ params }: ArtworkPageProps) {
+    const { id } = await params;
+    const result = await getArtwork(id);
+
+    if (!result.ok) {
         return (
             <main>
                 <h1>Artwork unavailable</h1>

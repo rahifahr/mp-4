@@ -1,4 +1,8 @@
-export const metadata = { title: "Credits | Art Explorer" };
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Credits",
+};
 
 export default function CreditsPage() {
     return (

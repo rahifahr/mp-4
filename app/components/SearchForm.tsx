@@ -1,4 +1,8 @@
-export default function SearchForm({ defaultQuery = "" }) {
+type SearchFormProps = {
+    defaultQuery?: string;
+};
+
+export default function SearchForm({ defaultQuery = "" }: SearchFormProps) {
     return (
         <form action="/" method="get" role="search" className="search-form">
             <label htmlFor="q">Search artworks</label>

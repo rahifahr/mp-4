@@ -1,6 +1,12 @@
 import Link from "next/link";
 
-function buildHref(query, page) {
+type PaginationProps = {
+    query: string;
+    page: number;
+    totalPages: number;
+};
+
+function buildHref(query: string, page: number): string {
     const params = new URLSearchParams();
     if (query) {
         params.set("q", query);
@@ -9,7 +15,11 @@ function buildHref(query, page) {
     return `/?${params}`;
 }
 
-export default function Pagination({ query, page, totalPages }) {
+export default function Pagination({
+                                       query,
+                                       page,
+                                       totalPages,
+                                   }: PaginationProps) {
     if (totalPages <= 1) {
         return null;
     }

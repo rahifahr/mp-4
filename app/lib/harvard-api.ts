@@ -1,7 +1,9 @@
+import type { Result } from "./types";
+
 const BASE_URL = "https://api.harvardartmuseums.org";
 const TIMEOUT_MS = 8000;
 
-function errorForStatus(status) {
+function errorForStatus(status: number): string {
     if (status === 429) {
         return "The daily API limit has been reached. Please try again tomorrow.";
     }
@@ -14,10 +16,16 @@ function errorForStatus(status) {
     return "The museum API is having problems. Please try again later.";
 }
 
-export async function requestHarvard(path, params = {}) {
+export async function requestHarvard<T>(
+    path: string,
+    params: Record<string, string> = {},
+): Promise<Result<T>> {
     const key = process.env.HARVARD_API_KEY;
     if (!key) {
-        return { error: "The server is missing its API key configuration." };
+        return {
+            ok: false,
+            error: "The server is missing its API key configuration.",
+        };
     }
 
     const query = new URLSearchParams({ ...params, apikey: key });
@@ -29,12 +37,13 @@ export async function requestHarvard(path, params = {}) {
         });
 
         if (!response.ok) {
-            return { error: errorForStatus(response.status) };
+            return { ok: false, error: errorForStatus(response.status) };
         }
 
-        return { data: await response.json() };
+        return { ok: true, data: (await response.json()) as T };
     } catch {
         return {
+            ok: false,
             error: "We couldn't reach the museum API. Please try again later.",
         };
     }
